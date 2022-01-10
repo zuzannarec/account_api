@@ -1,5 +1,5 @@
 FROM golang:1.17-alpine
-RUN apk add build-base
+RUN apk add --no-cache build-base
 
 WORKDIR /app
 
