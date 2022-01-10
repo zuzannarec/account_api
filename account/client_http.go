@@ -1,4 +1,4 @@
-package account
+package accountapi
 
 import (
 	"encoding/json"
@@ -60,7 +60,7 @@ func NewClient(opts ...Option) (*Client, error) {
 	return c, nil
 }
 
-func (client *Client) doRequest(req *http.Request, v *Account) error {
+func (client *Client) doRequest(req *http.Request, body *Account) error {
 	response, err := client.netClient.Do(req)
 	if err != nil {
 		client.logger.Debugf("request failed %w", err)
@@ -68,11 +68,23 @@ func (client *Client) doRequest(req *http.Request, v *Account) error {
 	}
 	defer response.Body.Close()
 
-	if v == nil {
+	if response.StatusCode >= http.StatusBadRequest {
+		errResp := &AccountErrorResponse{}
+		if err = json.NewDecoder(response.Body).Decode(errResp); err == nil {
+			client.logger.Debugf("request failed, status code %d, error message %v, error code %v",
+				response.StatusCode, errResp.ErrorMessage, errResp.ErrorCode)
+			return fmt.Errorf("request failed, status code %d, error message %v, error code %v",
+				response.StatusCode, errResp.ErrorMessage, errResp.ErrorCode)
+		}
+		client.logger.Debugf("unknown error, status code %d", response.StatusCode)
+		return fmt.Errorf("unknown error, status code: %d", response.StatusCode)
+	}
+
+	if body == nil {
 		return nil
 	}
 
-	if err := json.NewDecoder(response.Body).Decode(v); err != nil {
+	if err := json.NewDecoder(response.Body).Decode(body); err != nil {
 		client.logger.Debugf("could not decode response %w", err)
 		return err
 	}
