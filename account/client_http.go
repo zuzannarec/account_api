@@ -1,6 +1,7 @@
 package account
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -45,9 +46,9 @@ func WithLogger(l Logger) func(*Client) error {
 }
 
 func NewClient(opts ...Option) (*Client, error) {
-	host, _ := url.Parse("http://:8080")
+	host, _ := url.Parse("http://:8080/v1")
 	c := &Client{
-		reqTimeout: 10,
+		reqTimeout: 100 * time.Millisecond,
 		logger:     NewDefaultLogger(),
 		baseURL:    host,
 	}
@@ -60,4 +61,24 @@ func NewClient(opts ...Option) (*Client, error) {
 		Timeout: c.reqTimeout,
 	}
 	return c, nil
+}
+
+func (client *Client) doRequest(req *http.Request, v ...interface{}) error {
+	response, err := client.netClient.Do(req)
+	if err != nil {
+		client.logger.Debugf("request failed %w", err)
+		return err
+	}
+	defer response.Body.Close()
+
+	if v == nil {
+		return nil
+	}
+
+	if err := json.NewDecoder(response.Body).Decode(&v); err != nil {
+		client.logger.Debugf("could not decode response %w", err)
+		return err
+	}
+
+	return nil
 }

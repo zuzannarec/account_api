@@ -21,6 +21,6 @@ func TestClient(t *testing.T) {
 func TestCreateClient(t *testing.T) {
 	_, err := NewClient()
 	if err != nil {
-		t.Fatalf("Could not create client")
+		t.Fatalf("could not create client %v", err)
 	}
 }
