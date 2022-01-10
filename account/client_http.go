@@ -51,7 +51,7 @@ func NewClient(opts ...Option) (*Client, error) {
 	}
 	for _, opt := range opts {
 		if err := opt(c); err != nil {
-			return &Client{}, fmt.Errorf("failed to set option %w", err)
+			return nil, fmt.Errorf("failed to set option %w", err)
 		}
 	}
 	c.netClient = &http.Client{
