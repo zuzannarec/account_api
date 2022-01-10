@@ -19,9 +19,6 @@ type Option func(*Client) error
 
 func WithReqTimeout(timeout time.Duration) func(*Client) error {
 	return func(c *Client) error {
-		if timeout > 1000 {
-			return fmt.Errorf("invalid timeout value %s", timeout)
-		}
 		c.reqTimeout = timeout
 		return nil
 	}
@@ -63,7 +60,7 @@ func NewClient(opts ...Option) (*Client, error) {
 	return c, nil
 }
 
-func (client *Client) doRequest(req *http.Request, v ...interface{}) error {
+func (client *Client) doRequest(req *http.Request, v *Account) error {
 	response, err := client.netClient.Do(req)
 	if err != nil {
 		client.logger.Debugf("request failed %w", err)
@@ -75,7 +72,7 @@ func (client *Client) doRequest(req *http.Request, v ...interface{}) error {
 		return nil
 	}
 
-	if err := json.NewDecoder(response.Body).Decode(&v); err != nil {
+	if err := json.NewDecoder(response.Body).Decode(v); err != nil {
 		client.logger.Debugf("could not decode response %w", err)
 		return err
 	}
