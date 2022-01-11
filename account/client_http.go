@@ -1,8 +1,9 @@
-package accountapi
+package account
 
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -69,15 +70,15 @@ func (client *Client) doRequest(req *http.Request, body *Account) error {
 	defer response.Body.Close()
 
 	if response.StatusCode >= http.StatusBadRequest {
-		errResp := &AccountErrorResponse{}
-		if err = json.NewDecoder(response.Body).Decode(errResp); err == nil {
-			client.logger.Debugf("request failed, status code %d, error message %v, error code %v",
-				response.StatusCode, errResp.ErrorMessage, errResp.ErrorCode)
-			return fmt.Errorf("request failed, status code %d, error message %v, error code %v",
-				response.StatusCode, errResp.ErrorMessage, errResp.ErrorCode)
+		errResp, err := io.ReadAll(response.Body)
+		if err == nil && len(errResp) > 0 {
+			client.logger.Debugf("request failed, status code %d, error response %v",
+				response.StatusCode, string(errResp))
+			return fmt.Errorf("request failed, status code %d, error response %v",
+				response.StatusCode, string(errResp))
 		}
-		client.logger.Debugf("unknown error, status code %d", response.StatusCode)
-		return fmt.Errorf("unknown error, status code: %d", response.StatusCode)
+		client.logger.Debugf("request failed with unknown error, status code %d", response.StatusCode)
+		return fmt.Errorf("request failed with unknown error, status code %d", response.StatusCode)
 	}
 
 	if body == nil {

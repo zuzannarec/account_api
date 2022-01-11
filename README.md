@@ -6,7 +6,7 @@ https://www.youtube.com/watch?v=fe8vJSIzWss
 
 The functions responsible for handling Create, Fetch and Delete operations takes context.Context as their first parameter to allow setting timeouts and/or request cancellation.
 
-# Run tests
+# Run tests using docker-compose
 
 The tests can be executed using `docker-compose.yml` which is an extended version of https://github.com/form3tech-oss/interview-accountapi/blob/master/docker-compose.yml
 Use the following command to run tests:
@@ -19,4 +19,4 @@ Use the following command to run tests:
 - add a circuit breaker
 
 # Notes
-I noticed that the example payload in Accounts Create section in the documentation (https://api-docs.form3.tech/api.html#organisation-accounts-create) does not contain `name` field which is mandatory. It seems that it needs to be updated as the example request fails with error: {"error_message":"validation failure list: validation failure list: validation failure list: name in body is required"}
+I noticed that the first example payload in Accounts Create section in the documentation (https://api-docs.form3.tech/api.html#organisation-accounts-create) does not contain `name` field which is mandatory. It seems that it needs to be updated as the example request fails with error: {"error_message":"validation failure list: validation failure list: validation failure list: name in body is required"}

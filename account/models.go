@@ -1,13 +1,10 @@
-package accountapi
+package account
+
+import "time"
 
 // Account represents an account in the form3 org section.
 // See https://api-docs.form3.tech/api.html#organisation-accounts for
 // more information about fields.
-type AccountErrorResponse struct {
-	ErrorMessage *string `json:"error_message,omitempty"`
-	ErrorCode    *string `json:"error_code,omitempty"`
-}
-
 type Account struct {
 	Data *AccountData `json:"data,omitempty"`
 }
@@ -16,7 +13,9 @@ type AccountData struct {
 	ID             string             `json:"id,omitempty"`
 	OrganisationID string             `json:"organisation_id,omitempty"`
 	Type           string             `json:"type,omitempty"`
-	Version        *int64             `json:"version,omitempty"`
+	Version        *int               `json:"version,omitempty"`
+	CreatedOn      time.Time          `json:"created_on,omitempty"`
+	ModifiedOn     time.Time          `json:"modified_on,omitempty"`
 }
 type AccountUserDefinedData struct {
 	Key   string `json:"key"`

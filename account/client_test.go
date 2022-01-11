@@ -1,4 +1,4 @@
-package accountapi
+package account
 
 import (
 	"fmt"

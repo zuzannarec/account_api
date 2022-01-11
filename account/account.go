@@ -1,4 +1,4 @@
-package accountapi
+package account
 
 import (
 	"bytes"
@@ -14,7 +14,7 @@ const (
 	deleteAccountPath = "%s/organisation/accounts/%s?version=%d"
 )
 
-func (c *Client) CreateAccount(ctx context.Context, data *Account) (*Account, error) {
+func (c *Client) Create(ctx context.Context, data *Account) (*Account, error) {
 	body, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (c *Client) CreateAccount(ctx context.Context, data *Account) (*Account, er
 	return res, nil
 }
 
-func (c *Client) FetchAccount(ctx context.Context, accountID string) (*Account, error) {
+func (c *Client) Fetch(ctx context.Context, accountID string) (*Account, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf(fetchAccountPath, c.baseURL, accountID), nil)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (c *Client) FetchAccount(ctx context.Context, accountID string) (*Account, 
 	return res, nil
 }
 
-func (c *Client) DeleteAccount(ctx context.Context, accountID string, version int) error {
+func (c *Client) Delete(ctx context.Context, accountID string, version int) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, fmt.Sprintf(deleteAccountPath, c.baseURL, accountID, version), nil)
 	if err != nil {
 		return err
