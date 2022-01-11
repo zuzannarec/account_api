@@ -2,11 +2,13 @@ version: '3'
 
 services:
   account_tests:
-    network_mode: host
     build:
       context: .
       dockerfile: Dockerfile
-    restart: on-failure
+    command: ./wait-for-it.sh accountapi:8080 -- go test ./... -v
+    environment:
+      - ACCOUNT_API_TESTS_HOST=accountapi
+      - ACCOUNT_API_TESTS_PORT=8080
     depends_on:
       - accountapi
 

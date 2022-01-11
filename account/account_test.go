@@ -4,13 +4,34 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	envAPIHost     = "ACCOUNT_API_TESTS_HOST"
+	defaultApiHost = "127.0.0.1"
+	envAPIPort     = "ACCOUNT_API_TESTS_PORT"
+	defaultApiPort = "8080"
+)
+
+func getEnvWithDefault(key string, def string) string {
+	envVal, ok := os.LookupEnv(key)
+	if !ok {
+		return def
+	}
+	return envVal
+}
+
+func newTestClient() (*Client, error) {
+	url := fmt.Sprintf("http://%s:%s/v1", getEnvWithDefault(envAPIHost, defaultApiHost), getEnvWithDefault(envAPIPort, defaultApiPort))
+	return NewClient(WithLogger(NewStdOutLogger()), WithBaseURL(url))
+}
+
 func TestCreateFetchDeleteAccount(t *testing.T) {
-	c, err := NewClient(WithLogger(NewStdOutLogger()))
+	c, err := newTestClient()
 	assert.Nil(t, err, fmt.Sprintf("could not create client %v", err))
 
 	body := []byte(`
@@ -58,7 +79,7 @@ func TestCreateFetchDeleteAccount(t *testing.T) {
 }
 
 func TestCreateAccountTwice(t *testing.T) {
-	c, err := NewClient(WithLogger(NewStdOutLogger()))
+	c, err := newTestClient()
 	assert.Nil(t, err, fmt.Sprintf("could not create client %v", err))
 
 	body := []byte(`
@@ -110,7 +131,7 @@ func TestCreateAccountTwice(t *testing.T) {
 }
 
 func TestCreateAccountWithoutMandatoryField(t *testing.T) {
-	c, err := NewClient(WithLogger(NewStdOutLogger()))
+	c, err := newTestClient()
 	assert.Nil(t, err, fmt.Sprintf("could not create client %v", err))
 
 	body := []byte(`
@@ -143,7 +164,7 @@ func TestCreateAccountWithoutMandatoryField(t *testing.T) {
 }
 
 func TestCreateAccountEmptyPayload(t *testing.T) {
-	c, err := NewClient(WithLogger(NewStdOutLogger()))
+	c, err := newTestClient()
 	assert.Nil(t, err, fmt.Sprintf("could not create client %v", err))
 
 	account := Account{}
@@ -156,7 +177,7 @@ func TestCreateAccountEmptyPayload(t *testing.T) {
 }
 
 func TestCreateAccountNilPayload(t *testing.T) {
-	c, err := NewClient(WithLogger(NewStdOutLogger()))
+	c, err := newTestClient()
 	assert.Nil(t, err, fmt.Sprintf("could not create client %v", err))
 
 	assert.Nil(t, err, fmt.Sprintf("could not unmarshal Account json data %v", err))
@@ -168,7 +189,7 @@ func TestCreateAccountNilPayload(t *testing.T) {
 }
 
 func TestGetNonExistentAccount(t *testing.T) {
-	c, err := NewClient(WithLogger(NewStdOutLogger()))
+	c, err := newTestClient()
 	assert.Nil(t, err, fmt.Sprintf("could not create client %v", err))
 
 	ctx := context.Background()
@@ -179,7 +200,7 @@ func TestGetNonExistentAccount(t *testing.T) {
 }
 
 func TestGetInvalidAccountID(t *testing.T) {
-	c, err := NewClient(WithLogger(NewStdOutLogger()))
+	c, err := newTestClient()
 	assert.Nil(t, err, fmt.Sprintf("could not create client %v", err))
 
 	ctx := context.Background()
@@ -190,7 +211,7 @@ func TestGetInvalidAccountID(t *testing.T) {
 }
 
 func TestDeleteNonExistentAccount(t *testing.T) {
-	c, err := NewClient(WithLogger(NewStdOutLogger()))
+	c, err := newTestClient()
 	assert.Nil(t, err, fmt.Sprintf("could not create client %v", err))
 
 	ctx := context.Background()
@@ -201,7 +222,7 @@ func TestDeleteNonExistentAccount(t *testing.T) {
 }
 
 func TestDeleteInvalidAccountID(t *testing.T) {
-	c, err := NewClient(WithLogger(NewStdOutLogger()))
+	c, err := newTestClient()
 	assert.Nil(t, err, fmt.Sprintf("could not create client %v", err))
 
 	ctx := context.Background()
