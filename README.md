@@ -13,6 +13,8 @@ The functions responsible for handling Create, Fetch and Delete operations takes
 
 The tests can be executed using `docker-compose.yml` which is an extended version of https://github.com/form3tech-oss/interview-accountapi/blob/master/docker-compose.yml
 
+There's a timing issue in docker-compose - sometimes the container with tests starts before the fake API service is ready and the tests fail. I've tried to control the startup order of these services but finally I decided to simply restart tests service on failure.
+
 Use the following command to run tests:
 
 `docker-compose up`

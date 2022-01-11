@@ -45,16 +45,16 @@ func TestCreateFetchDeleteAccount(t *testing.T) {
 	assert.Nil(t, err, fmt.Sprintf("could not unmarshal Account json data %v", err))
 	ctx := context.Background()
 	_, err = c.Create(ctx, &account)
-	assert.Nil(t, err, fmt.Sprintf("could not create account %v", err))
+	if assert.Nil(t, err, fmt.Sprintf("could not create account %v", err)) {
+		id := "26bab9a2-b9ec-4ab9-8fdf-e4bad7087f06"
 
-	id := "26bab9a2-b9ec-4ab9-8fdf-e4bad7087f06"
+		resp, err := c.Fetch(ctx, id)
+		assert.Nil(t, err, fmt.Sprintf("get request for account %s failed %v", id, err))
+		version := resp.Data.Version
 
-	resp, err := c.Fetch(ctx, id)
-	assert.Nil(t, err, fmt.Sprintf("get request for account %s failed %v", id, err))
-	version := resp.Data.Version
-
-	err = c.Delete(ctx, id, *version)
-	assert.Nil(t, err, fmt.Sprintf("get request for account %s failed %v", id, err))
+		err = c.Delete(ctx, id, *version)
+		assert.Nil(t, err, fmt.Sprintf("get request for account %s failed %v", id, err))
+	}
 }
 
 func TestCreateAccountTwice(t *testing.T) {
@@ -92,21 +92,21 @@ func TestCreateAccountTwice(t *testing.T) {
 	assert.Nil(t, err, fmt.Sprintf("could not unmarshal Account json data %v", err))
 	ctx := context.Background()
 	_, err = c.Create(ctx, &account)
-	assert.Nil(t, err, fmt.Sprintf("could not create account %v", err))
+	if assert.Nil(t, err, fmt.Sprintf("could not create account %v", err)) {
+		_, err = c.Create(ctx, &account)
+		assert.NotNil(t, err)
+		expectedErr := "status code 409"
+		assert.Containsf(t, err.Error(), expectedErr, "expected error containing %q, got %s", expectedErr, err)
 
-	_, err = c.Create(ctx, &account)
-	assert.NotNil(t, err)
-	expectedErr := "status code 409"
-	assert.Containsf(t, err.Error(), expectedErr, "expected error containing %q, got %s", expectedErr, err)
+		id := "26bab9a2-b9ec-4ab9-8fdf-e4bad7087f06"
 
-	id := "26bab9a2-b9ec-4ab9-8fdf-e4bad7087f06"
+		resp, err := c.Fetch(ctx, id)
+		assert.Nil(t, err, fmt.Sprintf("get request for account %s failed %v", id, err))
+		version := resp.Data.Version
 
-	resp, err := c.Fetch(ctx, id)
-	assert.Nil(t, err, fmt.Sprintf("get request for account %s failed %v", id, err))
-	version := resp.Data.Version
-
-	err = c.Delete(ctx, id, *version)
-	assert.Nil(t, err, fmt.Sprintf("get request for account %s failed %v", id, err))
+		err = c.Delete(ctx, id, *version)
+		assert.Nil(t, err, fmt.Sprintf("get request for account %s failed %v", id, err))
+	}
 }
 
 func TestCreateAccountWithoutMandatoryField(t *testing.T) {

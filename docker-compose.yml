@@ -6,17 +6,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: on-failure
     depends_on:
-      accountapi:
-        condition: service_healthy
+      - accountapi
 
   accountapi:
     image: form3tech/interview-accountapi:v1.0.0-39-gef7db03d
-    healthcheck:
-      test: ["CMD", "nc", "-z", "-v", "localhost", "8080"]
-      timeout: 5s
-      interval: 2s
-      retries: 10
     restart: on-failure
     depends_on:
       - postgresql
