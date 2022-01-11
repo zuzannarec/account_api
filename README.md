@@ -1,7 +1,10 @@
-# account_api
+# Account API
 Author: Zuzanna Rec, zuzanna.rec@gmail.com
+
 This is my first project in Golang. Apart from the language documentation I used the following sources:
+
 https://gogoapps.io/blog/passing-loggers-in-go-golang-logging-best-practices/
+
 https://www.youtube.com/watch?v=fe8vJSIzWss
 
 The functions responsible for handling Create, Fetch and Delete operations takes context.Context as their first parameter to allow setting timeouts and/or request cancellation.
@@ -9,6 +12,7 @@ The functions responsible for handling Create, Fetch and Delete operations takes
 # Run tests using docker-compose
 
 The tests can be executed using `docker-compose.yml` which is an extended version of https://github.com/form3tech-oss/interview-accountapi/blob/master/docker-compose.yml
+
 Use the following command to run tests:
 
 `docker-compose up`
